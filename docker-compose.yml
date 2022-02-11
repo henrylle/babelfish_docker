@@ -1,0 +1,28 @@
+version: "3"
+services:
+  database:
+    build: .
+    image: babelfish
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+    ports:
+      - 1433:1433
+      - 5432:5432
+    volumes:
+      - data:/usr/local/pgsql/data
+#      - bkp:/var/opt/mssql/bkp
+volumes:
+  data:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/home/henrylle/Projetos/babelfish/babelfish-fonte-oficial-by-henrylle/data"
+  # bkp:
+  #   driver: local
+  #   driver_opts:
+  #     type: "none"
+  #     o: "bind"
+  #     device: "./bkp_babelfish"
