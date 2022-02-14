@@ -99,35 +99,36 @@ WORKDIR /babelfish_extensions/contrib/babelfishpg_tsql
 RUN make 
 RUN make install
 
+#Instalando locales (isso é pq dava bucho no enconding do pgsql)
+RUN apt-get install -y locales locales-all
+ENV LC_ALL pt_BR.UTF-8
+ENV LANG pt_BR.UTF-8
+ENV LANGUAGE pt_BR.UTF-8
+
 # Additional installation steps https://babelfishpg.org/docs/installation/compiling-babelfish-from-source/#additional-installation-steps
 
 #Criando o diretório para os dados do pgsql
-RUN mkdir -p /usr/local/pgsql/data
+ENV PGDATA="/usr/local/pgsql/data"
+
+RUN mkdir -p $PGDATA
 
 #Postgres não starta com o owner sendo root
-RUN adduser postgres
+RUN adduser postgres && usermod -a -G postgres postgres
 
 # Change the ownership of the Babelfish binaries and the data directory to the new user (postgres).
 RUN chown -R postgres:postgres $INSTALLATION_PATH
-RUN chown -R postgres:postgres /usr/local/pgsql/data
+RUN chown -R postgres:postgres $PGDATA
 
 
 COPY start_babelfish.sh /usr/local/bin/
 
-RUN chmod 0777 /usr/local/bin/start_babelfish.sh
+RUN chmod o+x /usr/local/bin/start_babelfish.sh
+
 
 #Ajustes em config no pg
 RUN mkdir /usr/local/pg_conf
 COPY pg_conf/ /usr/local/pg_conf/
-
-USER postgres
-
-RUN /usr/local/pgsql-13.4/bin/initdb -D /usr/local/pgsql/data
-
-USER root
-
-RUN cp /usr/local/pg_conf/postgresql.conf /usr/local/pgsql/data/
-RUN cp /usr/local/pg_conf/pg_hba.conf /usr/local/pgsql/data/
+RUN chmod o+r /usr/local/pg_conf/*
 
 USER postgres
 
