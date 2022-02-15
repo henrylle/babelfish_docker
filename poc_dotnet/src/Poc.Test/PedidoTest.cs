@@ -3,6 +3,8 @@ using Poc.Web.Controllers;
 using Poc.Web.DTO;
 using Poc.Web.Repository;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Poc.Test
 {
@@ -47,19 +49,19 @@ namespace Poc.Test
       Assert.AreEqual(200, result.StatusCode);
       Assert.AreEqual("Pedido inserido com sucesso", result.Value);
 
-      var pedidoPersistido = _container.GetInstance<IRepository<Web.Entities.Pedido>>().RetornarPorId("26F20BF6-DA24-4226-AA9F-A27FC5366FA7");
+      var pedidoPersistido = _container.GetInstance<IRepository<Web.Entities.Pedido>>().Consulta().Include(a => a.Itens).FirstOrDefault();
       Assert.AreEqual(pedido.Nome, pedidoPersistido.Nome);
-      //Assert.AreEqual(pedido.Itens.Count, pedidoPersistido.Itens.Count);
+      Assert.AreEqual(pedido.Itens.Count, pedidoPersistido.Itens.Count);
     }
 
-    //[Test]
+    [Test]
     public void RetonaOkAoExcluirPedidoTest()
     {
       //Ambiente
       RetonaOkAoInserirPedidoTest();
       var pedido = _container.GetInstance<IRepository<Web.Entities.Pedido>>().RetornarPrimeiraOcorrencia();
 
-      //A��o
+      //Acao
       var response = _sut.Excluir(pedido.Id.ToString()).Result;
 
       var result = ((Microsoft.AspNetCore.Mvc.ObjectResult)response);
@@ -68,7 +70,7 @@ namespace Poc.Test
       Assert.AreEqual(200, result.StatusCode);
       Assert.AreEqual("Pedido removido com sucesso", result.Value);
 
-      var pedidoPersistido = _container.GetInstance<IRepository<Web.Entities.Pedido>>().RetornarPrimeiraOcorrencia();
+      var pedidoPersistido = _container.GetInstance<IRepository<Web.Entities.Pedido>>().RetornarPorId(pedido.Id);
       Assert.IsNull(pedidoPersistido);
     }
   }
