@@ -7,6 +7,10 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
+      - BABELFISH_USER=babelfish_user
+      - BABELFISH_PASSWORD=babelfish
+      - BABELFISH_DB=babelfish_db
+      - MIGRATION_MODE=multi-db
     ports:
       - 1433:1433
       - 5432:5432

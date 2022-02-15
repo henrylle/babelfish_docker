@@ -8,13 +8,23 @@ RUN apt-get update -y
 #Instalando dependencias
 RUN apt-get install git -y
 
+#Instalando locales (isso é pq dava bucho no enconding do pgsql)
+RUN apt-get install -y locales locales-all
+ENV LC_ALL pt_BR.UTF-8
+ENV LANG pt_BR.UTF-8
+ENV LANGUAGE pt_BR.UTF-8
+
 #Clonando os projetos
 RUN git clone https://github.com/babelfish-for-postgresql/postgresql_modified_for_babelfish.git
 RUN git clone https://github.com/babelfish-for-postgresql/babelfish_extensions.git
 
 #Bibliotecas de preparação
+RUN apt-get update -y
 RUN apt install -y build-essential flex libxml2-dev bison libreadline-dev zlib1g-dev
-RUN apt install -y uuid-dev pkg-config libossp-uuid-dev libssl-dev icu-devtools
+RUN apt install -y libssl-dev icu-devtools
+RUN apt install -y libossp-uuid-dev
+RUN apt install -y uuid-dev
+RUN apt install -y pkg-config 
 
 #Compilando o código
 WORKDIR /postgresql_modified_for_babelfish
@@ -99,11 +109,15 @@ WORKDIR /babelfish_extensions/contrib/babelfishpg_tsql
 RUN make 
 RUN make install
 
-#Instalando locales (isso é pq dava bucho no enconding do pgsql)
-RUN apt-get install -y locales locales-all
-ENV LC_ALL pt_BR.UTF-8
-ENV LANG pt_BR.UTF-8
-ENV LANGUAGE pt_BR.UTF-8
+#INSTALANDO SQLCMD
+RUN apt-get update -y
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | tee /etc/apt/sources.list.d/msprod.list
+RUN apt-get update -y
+ENV ACCEPT_EULA=Y
+RUN apt-get install mssql-tools unixodbc-dev -y 
+RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
+RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
 
 # Additional installation steps https://babelfishpg.org/docs/installation/compiling-babelfish-from-source/#additional-installation-steps
 

@@ -66,11 +66,19 @@ setup_babelfish_db(){
    $INSTALLATION_PATH/bin/psql -c "CREATE USER $BABELFISH_USER WITH CREATEDB \
 	  CREATEROLE PASSWORD '$BABELFISH_PASSWORD' INHERIT;"
 
-  #Create a database named demo, owned by the above user */
-  $INSTALLATION_PATH/bin/psql -c "CREATE DATABASE demo OWNER babelfish_user;"
- 
-  $INSTALLATION_PATH/bin/psql -c "ALTER SYSTEM SET babelfishpg_tsql.database_name = 'demo';"
-  $INSTALLATION_PATH/bin/psql -c "SELECT pg_reload_conf();"
+  $INSTALLATION_PATH/bin/psql -c "DROP DATABASE IF EXISTS $BABELFISH_DB;"
+
+  
+  $INSTALLATION_PATH/bin/psql -c "CREATE DATABASE $BABELFISH_DB OWNER $BABELFISH_USER;"
+  
+  #Rodando comandos no banco que acabei de criar  
+  $INSTALLATION_PATH/bin/psql -U postgres -d $BABELFISH_DB -c "CREATE EXTENSION IF NOT EXISTS \"babelfishpg_tds\" CASCADE;"  
+  $INSTALLATION_PATH/bin/psql -U postgres -d $BABELFISH_DB -c "GRANT ALL ON SCHEMA sys to $BABELFISH_USER;"
+  $INSTALLATION_PATH/bin/psql -U postgres -d $BABELFISH_DB -c "ALTER SYSTEM SET babelfishpg_tsql.database_name = \"$BABELFISH_DB\";"  
+  $INSTALLATION_PATH/bin/psql -U postgres -d $BABELFISH_DB -c "ALTER SYSTEM SET babelfishpg_tds.set_db_session_property = true;"
+  $INSTALLATION_PATH/bin/psql -U postgres -d $BABELFISH_DB -c "ALTER DATABASE babelfish_db SET babelfishpg_tsql.migration_mode = \"$MIGRATION_MODE\";"
+  $INSTALLATION_PATH/bin/psql -U postgres -d $BABELFISH_DB -c "SELECT pg_reload_conf();"
+  $INSTALLATION_PATH/bin/psql -U postgres -d $BABELFISH_DB -c "CALL SYS.INITIALIZE_BABELFISH('$BABELFISH_USER');"  
 }
 
 _main(){  
