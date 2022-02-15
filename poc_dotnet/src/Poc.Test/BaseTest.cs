@@ -26,13 +26,13 @@ namespace Poc.Test
 
       _unitOfWork = _container.GetInstance<IUnitOfWork>();
       _unitOfWork.Database.EnsureCreated();
-      //_unitOfWork.StartTransaction(IsolationLevel.ReadUncommitted);
+      _unitOfWork.StartTransaction(IsolationLevel.ReadUncommitted);
     }
 
     [TearDown]
     public virtual void TestCleanup()
     {
-      //_unitOfWork?.Commit();
+      _unitOfWork?.Rollback();
       _containerScope.Dispose();
       _container.Dispose();
     }
