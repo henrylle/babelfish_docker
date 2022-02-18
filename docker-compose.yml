@@ -1,8 +1,23 @@
 version: "3"
 services:
-  database:
+  database-destino:
     build: .
     image: babelfish
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - BABELFISH_USER=babelfish_user
+      - BABELFISH_PASSWORD=babelfish
+      - BABELFISH_DB=babelfish_db
+      - MIGRATION_MODE=multi-db
+    ports:
+      - 1434:1433
+      - 5433:5432
+    volumes:
+      - data_destino:/usr/local/pgsql/data
+  database:
+    build: .
     environment:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=postgres
@@ -16,17 +31,16 @@ services:
       - 5432:5432
     volumes:
       - data:/usr/local/pgsql/data
-#      - bkp:/var/opt/mssql/bkp
 volumes:
+  data_destino:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/home/henrylle/Projetos/babelfish/babelfish-fonte-oficial-by-henrylle/data_destino"
   data:
     driver: local
     driver_opts:
       type: "none"
       o: "bind"
       device: "/home/henrylle/Projetos/babelfish/babelfish-fonte-oficial-by-henrylle/data"
-  # bkp:
-  #   driver: local
-  #   driver_opts:
-  #     type: "none"
-  #     o: "bind"
-  #     device: "./bkp_babelfish"
