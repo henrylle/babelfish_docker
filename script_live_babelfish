@@ -1,0 +1,29 @@
+#SQL SERVER
+
+#
+criando o banco
+create database live_babelfish;
+use live_babelfish;
+# criando uma tabela de exemplo
+
+#criando tabela
+CREATE TABLE [Pedido]
+(
+  [Id] uniqueidentifier NOT NULL,
+  [DataCriacao] datetime NOT NULL,
+  [Nome] nvarchar(50) NOT NULL,
+  CONSTRAINT [PK_Pedido] PRIMARY KEY ([Id])
+);
+
+#criando indice
+CREATE INDEX [IX_Pedido_Nome] ON [Pedido] ([Nome]);
+
+#insert
+insert into Pedido
+  (Id, DataCriacao, Nome)
+VALUES
+  (newid(), getdate(), 'Pedido 1');
+
+
+
+#No Postgresql
