@@ -31,6 +31,17 @@ services:
       - 5432:5432
     volumes:
       - data:/usr/local/pgsql/data
+  database-sqlserver-nativo:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    environment:
+      - "ACCEPT_EULA=Y"
+      - "SA_PASSWORD=@Docker!"
+      - "POSTGRES_DB=bia"
+    ports:
+      - 1435:1433
+    volumes:
+      - data_sqlserver_nativo:/var/opt/mssql/data
+      - bkp_sqlserver_nativo:/var/opt/mssql/bkp
 volumes:
   data_destino:
     driver: local
@@ -44,3 +55,15 @@ volumes:
       type: "none"
       o: "bind"
       device: "/home/henrylle/Projetos/babelfish/babelfish-fonte-oficial-by-henrylle/data"
+  data_sqlserver_nativo:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/home/henrylle/Projetos/babelfish/sql-server-2017/data/"
+  bkp_sqlserver_nativo:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/home/henrylle/Projetos/babelfish/sql-server-2017/bkp_sql_server/"
